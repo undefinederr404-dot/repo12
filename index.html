@@ -194,8 +194,7 @@ nav.show{opacity:1;transform:translateY(0)}
     <div class="form-card" id="formCard">
       <h2>أخبرنا عن مشروعك</h2>
       <p class="sub">سيتواصل معك فريقنا خلال ٢٤ ساعة</p>
-      <form id="contactForm">
-        <div class="form-row">
+<form id="contactForm" action="submit.php" method="POST">        <div class="form-row">
           <div class="form-group">
             <label>الاسم الكامل *</label>
             <input type="text" name="name" placeholder="محمد العمري" required>
@@ -223,17 +222,15 @@ nav.show{opacity:1;transform:translateY(0)}
             <option value="other">أخرى</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>الميزانية التقريبية *</label>
-          <select name="budget" required>
-            <option value="">حدد نطاق الميزانية…</option>
-            <option value="under_5k">أقل من ٥،٠٠٠$</option>
-            <option value="5k_15k">من ٥،٠٠٠$ إلى ١٥،٠٠٠$</option>
-            <option value="15k_50k">من ١٥،٠٠٠$ إلى ٥٠،٠٠٠$</option>
-            <option value="over_50k">أكثر من ٥٠،٠٠٠$</option>
-            <option value="not_sure">لم أحدد بعد</option>
-          </select>
-        </div>
+<div class="form-group">
+  <label>الميزانية التقريبية *</label>
+  <input
+    type="text"
+    name="budget"
+    placeholder="50egp"
+    required
+  >
+</div>
         <div class="form-group">
           <label>تفاصيل المشروع</label>
           <textarea name="details" placeholder="اشرح لنا فكرتك باختصار — ما المشكلة التي يحلها مشروعك؟ من هم جمهورك المستهدف؟"></textarea>
@@ -822,26 +819,11 @@ document.getElementById('modal').addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 /* ══ FORM SUBMIT ══ */
-document.getElementById('contactForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const btn=document.getElementById('submitBtn');
-  const err=document.getElementById('formError');
-  const formData=new FormData(e.target);
-  const data=Object.fromEntries(formData.entries());
+document.getElementById('contactForm').addEventListener('submit', function () {
+    const btn = document.getElementById('submitBtn');
 
-  btn.classList.add('loading');
-  btn.disabled=true;
-  err.classList.remove('show');
-
-  /* Simulate / replace with real endpoint */
-  await new Promise(r=>setTimeout(r,1400));
-
-  btn.classList.remove('loading');
-  btn.disabled=false;
-
-  /* On success */
-  document.getElementById('contactForm').style.display='none';
-  document.getElementById('successView').classList.add('show');
+    btn.classList.add('loading');
+    btn.disabled = true;
 });
 </script>
 </body>
