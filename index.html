@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نبني — وكالة رقمية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<style>
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+
+/* ── Tokens ── */
+:root{
+  --bg:       #07080f;
+  --surface:  #0d1022;
+  --surface2: #131728;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+  --gold:     #c9a55a;
+  --gold-lt:  #e8c87a;
+  --purple:   #5c52cc;
+  --text:     #eeeeff;
+  --muted:    #6e7190;
+  --sub:      #9497b8;
+  --radius:   14px;
+  --ff:       'Cairo', sans-serif;
+}
+
+/* ── Base ── */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--ff);
+  overflow-x:hidden;
+  line-height:1.7;
+}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+
+/* ── Background atmosphere (NOT neon – just dark soft glows) ── */
+.bg-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
+.bg-orb-1{
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(50,40,120,.45) 0%,transparent 70%);
+  top:-200px;right:-150px;
+  animation:orbdrift1 22s ease-in-out infinite;
+}
+.bg-orb-2{
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(120,90,20,.22) 0%,transparent 70%);
+  bottom:20%;left:-100px;
+  animation:orbdrift2 28s ease-in-out infinite;
+}
+.bg-orb-3{
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(40,40,100,.3) 0%,transparent 70%);
+  top:60%;right:10%;
+  animation:orbdrift1 35s ease-in-out infinite reverse;
+}
+@keyframes orbdrift1{
+  0%,100%{transform:translate(0,0)}
+  33%{transform:translate(-60px,40px)}
+  66%{transform:translate(40px,-30px)}
+}
+@keyframes orbdrift2{
+  0%,100%{transform:translate(0,0)}
+  50%{transform:translate(80px,-60px)}
+}
+
+/* ── Progress bar ── */
+#progress{
+  position:fixed;top:0;left:0;height:2px;width:0;
+  background:linear-gradient(to left,var(--gold),var(--purple));
+  z-index:9999;transition:width .12s linear;
+}
+
+/* ── Nav ── */
+nav{
+  position:fixed;top:0;inset-inline:0;z-index:500;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 4%;
+  transition:background .4s,backdrop-filter .4s,border-color .4s;
+  border-bottom:1px solid transparent;
+}
+nav.scrolled{
+  background:rgba(7,8,15,.85);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom-color:var(--border);
+}
+.nav-logo{
+  font-size:1.45rem;font-weight:900;letter-spacing:-.02em;
+  background:linear-gradient(135deg,var(--gold-lt),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.nav-cta{
+  padding:.5rem 1.4rem;border-radius:8px;font-size:.85rem;font-weight:700;
+  border:1px solid var(--gold);color:var(--gold);
+  transition:background .25s,color .25s;
+}
+.nav-cta:hover{background:var(--gold);color:#000}
+
+/* ── Sections base ── */
+section{position:relative;z-index:10;overflow:hidden}
+.container{max-width:1100px;margin:0 auto;padding:0 5%}
+
+/* ── Eyebrow label ── */
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.75rem;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:1.2rem;
+}
+.eyebrow::before{
+  content:'';width:28px;height:2px;
+  background:linear-gradient(to left,var(--gold),transparent);
+  display:block;
+}
+
+/* ──────────────────────────────
+   HERO
+────────────────────────────── */
+#hero{
+  min-height:100svh;
+  display:flex;flex-direction:column;
+  align-items:flex-start;justify-content:center;
+  padding:8rem 5% 5rem;
+}
+.hero-inner{max-width:800px}
+
+.hero-tag{
+  display:inline-block;
+  font-size:.78rem;font-weight:700;letter-spacing:.2em;
+  color:var(--gold);text-transform:uppercase;
+  border:1px solid rgba(201,165,90,.3);
+  padding:.35rem 1rem;border-radius:100px;
+  margin-bottom:2rem;
+  background:rgba(201,165,90,.06);
+}
+
+.hero-line{
+  display:block;overflow:hidden;
+}
+.hero-line span{display:block}
+
+.hero-h1{
+  font-size:clamp(3rem,8vw,6.5rem);
+  font-weight:900;line-height:1.08;
+  letter-spacing:-.03em;
+  margin-bottom:1.5rem;
+}
+.hero-h1 .gold{
+  background:linear-gradient(135deg,var(--gold-lt),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.hero-sub{
+  font-size:clamp(1rem,2.2vw,1.25rem);
+  color:var(--sub);line-height:1.8;
+  max-width:520px;margin-bottom:2.5rem;
+  font-weight:300;
+}
+
+.hero-btn{
+  display:inline-flex;align-items:center;gap:.7rem;
+  padding:.9rem 2.2rem;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold),#a8853a);
+  color:#000;font-weight:800;font-size:1rem;
+  transition:transform .25s,box-shadow .25s,opacity .25s;
+  box-shadow:0 8px 32px rgba(201,165,90,.25);
+}
+.hero-btn:hover{transform:translateY(-3px);opacity:.9;box-shadow:0 12px 40px rgba(201,165,90,.35)}
+.hero-btn svg{transform:scaleX(-1)}
+
+.hero-scroll{
+  position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.6rem;
+  font-size:.7rem;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;
+}
+.scroll-line{
+  width:1px;height:50px;
+  background:linear-gradient(to bottom,var(--gold),transparent);
+  animation:scrollpulse 2s ease-in-out infinite;
+}
+@keyframes scrollpulse{
+  0%,100%{opacity:.4;transform:scaleY(1)}
+  50%{opacity:1;transform:scaleY(1.15)}
+}
+
+/* ──────────────────────────────
+   MARQUEE STRIP
+────────────────────────────── */
+.marquee-strip{
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.018);
+  overflow:hidden;padding:.8rem 0;
+  position:relative;z-index:10;
+}
+.marquee-track{
+  display:flex;gap:0;white-space:nowrap;
+  animation:marquee 18s linear infinite;
+}
+.marquee-item{
+  display:inline-flex;align-items:center;gap:1.5rem;
+  padding:0 2.5rem;
+  font-size:.78rem;font-weight:700;letter-spacing:.15em;
+  color:var(--muted);text-transform:uppercase;
+}
+.marquee-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--gold);flex-shrink:0;
+}
+@keyframes marquee{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+
+/* ──────────────────────────────
+   SERVICES
+────────────────────────────── */
+#services{padding:8rem 0}
+.section-header{text-align:center;margin-bottom:5rem}
+.section-h2{
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:900;letter-spacing:-.02em;
+  line-height:1.15;margin-bottom:1rem;
+}
+.section-h2 .gold{
+  background:linear-gradient(135deg,var(--gold-lt),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-sub{color:var(--sub);font-size:1.05rem;font-weight:300;max-width:480px;margin:0 auto}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:1.5rem;
+}
+.scard{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:2rem 1.75rem;
+  position:relative;overflow:hidden;
+  transition:border-color .3s,transform .3s;
+  cursor:default;
+}
+.scard::before{
+  content:'';position:absolute;
+  inset:0;border-radius:var(--radius);
+  background:linear-gradient(135deg,rgba(201,165,90,.06),transparent);
+  opacity:0;transition:opacity .35s;
+}
+.scard:hover{border-color:rgba(201,165,90,.3);transform:translateY(-5px)}
+.scard:hover::before{opacity:1}
+.scard-icon{
+  width:52px;height:52px;border-radius:12px;
+  background:rgba(201,165,90,.1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;margin-bottom:1.2rem;
+}
+.scard h3{font-size:1.1rem;font-weight:700;margin-bottom:.5rem}
+.scard p{font-size:.88rem;color:var(--sub);line-height:1.7}
+
+/* ──────────────────────────────
+   PROCESS
+────────────────────────────── */
+#process{padding:8rem 0;background:linear-gradient(180deg,transparent,rgba(13,16,34,.6),transparent)}
+.process-wrapper{
+  display:grid;grid-template-columns:1fr 2px 1fr 2px 1fr;
+  align-items:start;gap:0;
+  position:relative;margin-top:4rem;
+}
+.process-step{padding:0 2rem}
+.process-num{
+  font-size:3.5rem;font-weight:900;letter-spacing:-.05em;
+  color:rgba(201,165,90,.15);line-height:1;
+  margin-bottom:.8rem;
+}
+.process-step h3{font-size:1.1rem;font-weight:700;margin-bottom:.6rem}
+.process-step p{font-size:.88rem;color:var(--sub);line-height:1.75}
+.process-divider{
+  width:2px;
+  background:linear-gradient(to bottom,transparent,var(--gold),transparent);
+  align-self:stretch;transform:scaleY(0);transform-origin:top;
+}
+
+@media(max-width:768px){
+  .process-wrapper{
+    grid-template-columns:1fr;
+    gap:0;
+  }
+  .process-step{padding:1.5rem 0;border-bottom:1px solid var(--border)}
+  .process-step:last-child{border:none}
+  .process-divider{display:none}
+}
+
+/* ──────────────────────────────
+   STATS
+────────────────────────────── */
+#stats{padding:7rem 0}
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  background:var(--border);
+}
+.stat-box{
+  background:var(--surface);
+  padding:2.5rem 2rem;text-align:center;
+}
+.stat-num{
+  font-size:clamp(2.2rem,5vw,3.2rem);
+  font-weight:900;letter-spacing:-.04em;
+  background:linear-gradient(135deg,var(--gold-lt),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  line-height:1.1;
+}
+.stat-label{
+  font-size:.8rem;font-weight:600;letter-spacing:.1em;
+  color:var(--muted);text-transform:uppercase;
+  margin-top:.5rem;
+}
+
+/* ──────────────────────────────
+   FORM SECTION
+────────────────────────────── */
+#form-section{
+  padding:8rem 0 10rem;
+}
+.form-wrapper{
+  display:grid;grid-template-columns:1fr 1.4fr;
+  gap:5rem;align-items:start;
+}
+@media(max-width:900px){
+  .form-wrapper{grid-template-columns:1fr;gap:3rem}
+}
+
+.form-info .big-q{
+  font-size:clamp(1.8rem,4vw,2.8rem);
+  font-weight:900;line-height:1.25;letter-spacing:-.02em;
+  margin-bottom:1.5rem;
+}
+.form-info .big-q .gold{
+  background:linear-gradient(135deg,var(--gold-lt),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.form-info p{color:var(--sub);font-size:.95rem;line-height:1.8;margin-bottom:2rem}
+
+.contact-details{display:flex;flex-direction:column;gap:1rem}
+.contact-item{
+  display:flex;align-items:center;gap:.8rem;
+  font-size:.88rem;color:var(--sub);
+}
+.contact-item .icon{
+  width:36px;height:36px;border-radius:8px;
+  background:rgba(201,165,90,.1);border:1px solid rgba(201,165,90,.2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:1rem;
+}
+
+/* Form card */
+.form-card{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  padding:2.5rem 2rem;
+}
+.form-group{
+  display:flex;flex-direction:column;gap:.4rem;
+  margin-bottom:1.1rem;
+}
+.form-group label{
+  font-size:.75rem;font-weight:700;letter-spacing:.1em;
+  color:var(--muted);text-transform:uppercase;
+}
+.form-group input,
+.form-group select,
+.form-group textarea{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:.75rem 1.1rem;
+  color:var(--text);font-size:.93rem;
+  font-family:var(--ff);
+  outline:none;width:100%;
+  transition:border-color .25s,background .25s;
+  direction:rtl;
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder{color:var(--muted)}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+  border-color:rgba(201,165,90,.5);
+  background:rgba(201,165,90,.04);
+}
+.form-group select option{background:#0d1022;color:var(--text)}
+.form-group textarea{resize:vertical;min-height:90px}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+
+.form-submit{
+  width:100%;padding:1rem 1.5rem;
+  border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--gold),#a8853a);
+  color:#000;font-size:1rem;font-weight:800;
+  font-family:var(--ff);
+  cursor:pointer;margin-top:.5rem;
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  transition:opacity .25s,transform .2s,box-shadow .25s;
+  box-shadow:0 6px 24px rgba(201,165,90,.2);
+}
+.form-submit:hover{opacity:.88;transform:translateY(-2px);box-shadow:0 10px 32px rgba(201,165,90,.3)}
+.form-submit:active{transform:translateY(0)}
+.form-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.form-submit .spinner{
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid rgba(0,0,0,.3);border-top-color:#000;
+  animation:spin .7s linear infinite;display:none;
+}
+.form-submit.loading .btn-text{display:none}
+.form-submit.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.form-error{
+  color:#ff6b6b;font-size:.8rem;margin-top:.4rem;
+  display:none;
+}
+.form-error.show{display:block}
+
+.success-view{
+  display:none;text-align:center;padding:3rem 1rem;
+}
+.success-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(201,165,90,.12);border:2px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin:0 auto 1.5rem;
+}
+.success-view h3{font-size:1.5rem;font-weight:800;margin-bottom:.6rem}
+.success-view p{color:var(--sub);font-size:.92rem;line-height:1.75}
+
+/* ──────────────────────────────
+   Footer
+────────────────────────────── */
+footer{
+  border-top:1px solid var(--border);
+  padding:1.8rem 5%;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:1rem;
+  position:relative;z-index:10;
+}
+.footer-logo{
+  font-size:1.2rem;font-weight:900;
+  background:linear-gradient(135deg,var(--gold-lt),var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+footer p{font-size:.78rem;color:var(--muted)}
+
+/* ──────────────────────────────
+   GSAP initial state helpers
+────────────────────────────── */
+.reveal-up{opacity:0;transform:translateY(60px)}
+.reveal-left{opacity:0;transform:translateX(60px)}
+.reveal-right{opacity:0;transform:translateX(-60px)}
+.reveal-scale{opacity:0;transform:scale(.88)}
+.clip-reveal{
+  clip-path:inset(0 100% 0 0);
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- Atmosphere (NOT neon, just very dark soft glows) -->
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">نبني</div>
+  <a href="#form-section" class="nav-cta">ابدأ الآن</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag" id="hero-tag">وكالة رقمية متخصصة</div>
+    <h1 class="hero-h1" id="hero-h1">
+      <span class="hero-line"><span>نحوّل أفكارك</span></span>
+      <span class="hero-line"><span class="gold">إلى واقع رقمي</span></span>
+    </h1>
+    <p class="hero-sub" id="hero-sub">
+      نصمّم ونبني التطبيقات، المنصات، والمواقع التي تُحدث فرقاً حقيقياً — بجودة عالمية وفهم محلي.
+    </p>
+    <a href="#form-section" class="hero-btn" id="hero-btn">
+      <span>أخبرنا عن مشروعك</span>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>اسحب للأسفل</span>
+  </div>
+</section>
+
+<!-- ── MARQUEE ── -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <!-- duplicated for infinite loop -->
+    <span class="marquee-item"><span class="marquee-dot"></span>تطبيقات جوال</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>مواقع إلكترونية</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>منصات ويب</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>متاجر إلكترونية</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>هوية بصرية</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>أنظمة إدارة</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>تطبيقات جوال</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>مواقع إلكترونية</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>منصات ويب</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>متاجر إلكترونية</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>هوية بصرية</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>أنظمة إدارة</span>
+  </div>
+</div>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">ماذا نبني</div>
+      <h2 class="section-h2">كل ما تحتاجه <span class="gold">رقمياً</span></h2>
+      <p class="section-sub">من الفكرة إلى الإطلاق — نغطي كل جوانب بناء منتجك الرقمي.</p>
+    </div>
+    <div class="services-grid">
+      <div class="scard">
+        <div class="scard-icon">📱</div>
+        <h3>تطبيقات الجوال</h3>
+        <p>تطبيقات iOS و Android بتصميم احترافي وأداء عالٍ — ننشئها من الصفر حتى المتجر.</p>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">🌐</div>
+        <h3>مواقع إلكترونية</h3>
+        <p>مواقع سريعة وجذابة تعكس هويتك وتحقق أهدافك التجارية بتجربة مستخدم متميزة.</p>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">🛒</div>
+        <h3>متاجر إلكترونية</h3>
+        <p>حلول تجارة إلكترونية متكاملة مع بوابات دفع ولوحة تحكم ذكية لإدارة منتجاتك.</p>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">⚙️</div>
+        <h3>أنظمة الإدارة</h3>
+        <p>لوحات تحكم ومنصات إدارة مخصصة لأعمالك — بسيطة، سريعة، وقابلة للتوسع.</p>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">🎨</div>
+        <h3>الهوية البصرية</h3>
+        <p>هوية بصرية متماسكة تعكس قيم علامتك التجارية وتجعلك لا تُنسى في السوق.</p>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">📊</div>
+        <h3>منصات SaaS</h3>
+        <p>بناء منتجات SaaS قابلة للتوسع مع بنية تقنية متينة وتجربة مستخدم سلسة.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROCESS ── -->
+<section id="process">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow">آلية العمل</div>
+      <h2 class="section-h2">كيف <span class="gold">نعمل</span></h2>
+      <p class="section-sub">ثلاث خطوات واضحة من اليوم الأول إلى الإطلاق.</p>
+    </div>
+    <div class="process-wrapper">
+      <div class="process-step">
+        <div class="process-num">٠١</div>
+        <h3>نفهم ونخطط</h3>
+        <p>نجلس معك لفهم رؤيتك وأهدافك، ثم نبني خارطة طريق واضحة بجدول زمني دقيق.</p>
+      </div>
+      <div class="process-divider"></div>
+      <div class="process-step">
+        <div class="process-num">٠٢</div>
+        <h3>نصمم ونبني</h3>
+        <p>فريقنا يشتغل على التصميم والتطوير بالتوازي مع تحديثات مستمرة ليك على كل مرحلة.</p>
+      </div>
+      <div class="process-divider"></div>
+      <div class="process-step">
+        <div class="process-num">٠٣</div>
+        <h3>نطلق وندعم</h3>
+        <p>نطلق المشروع بعد اختبار شامل، ونوفر دعم مستمر بعد الإطلاق لضمان النجاح.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<section id="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num" data-target="120">0</div>
+        <div class="stat-label">مشروع منجز</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" data-target="98">0</div>
+        <div class="stat-label">% نسبة رضا العملاء</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" data-target="6">0</div>
+        <div class="stat-label">سنوات خبرة</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" data-target="40">0</div>
+        <div class="stat-label">عميل نشط</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FORM SECTION ── -->
+<section id="form-section">
+  <div class="container">
+    <div class="form-wrapper">
+
+      <!-- Left: info -->
+      <div class="form-info">
+        <div class="eyebrow">تواصل معنا</div>
+        <h2 class="big-q">
+          ما الذي تريد<br><span class="gold">بناءه؟</span>
+        </h2>
+        <p>أخبرنا عن مشروعك وسنرد عليك خلال ٢٤ ساعة بخطة واضحة وسعر شفاف.</p>
+        <div class="contact-details">
+          <div class="contact-item">
+            <span class="icon">📧</span>
+            <span>hello@nabni.dev</span>
+          </div>
+          <div class="contact-item">
+            <span class="icon">📞</span>
+            <span>+966 50 000 0000</span>
+          </div>
+          <div class="contact-item">
+            <span class="icon">⏱</span>
+            <span>نرد خلال ٢٤ ساعة في أيام العمل</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: form -->
+      <div class="form-card" id="formCard">
+        <form id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>الاسم الكامل *</label>
+              <input type="text" name="name" placeholder="محمد العمري" required>
+            </div>
+            <div class="form-group">
+              <label>رقم الجوال *</label>
+              <input type="tel" name="phone" placeholder="+966 5X XXX XXXX" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>البريد الإلكتروني *</label>
+            <input type="email" name="email" placeholder="name@company.com" required>
+          </div>
+
+          <div class="form-group">
+            <label>ماذا تريد أن تبني؟ *</label>
+            <select name="project_type" required>
+              <option value="">اختر نوع المشروع…</option>
+              <option value="mobile_app">تطبيق جوال (iOS / Android)</option>
+              <option value="website">موقع إلكتروني</option>
+              <option value="web_platform">منصة ويب متكاملة</option>
+              <option value="ecommerce">متجر إلكتروني</option>
+              <option value="dashboard">نظام إدارة / Dashboard</option>
+              <option value="saas">منتج SaaS</option>
+              <option value="identity">هوية بصرية وتصميم</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>الميزانية التقريبية *</label>
+            <select name="budget" required>
+              <option value="">حدد نطاق الميزانية…</option>
+              <option value="under_5k">أقل من ٥،٠٠٠$</option>
+              <option value="5k_15k">من ٥،٠٠٠$ إلى ١٥،٠٠٠$</option>
+              <option value="15k_50k">من ١٥،٠٠٠$ إلى ٥٠،٠٠٠$</option>
+              <option value="over_50k">أكثر من ٥٠،٠٠٠$</option>
+              <option value="not_sure">لم أحدد بعد</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>تفاصيل المشروع</label>
+            <textarea name="details" placeholder="اشرح لنا فكرتك باختصار — ما المشكلة التي يحلها مشروعك؟ من هم جمهورك المستهدف؟"></textarea>
+          </div>
+
+          <div class="form-error" id="formError">حدث خطأ، يرجى المحاولة مرة أخرى.</div>
+
+          <button type="submit" class="form-submit" id="submitBtn">
+            <span class="btn-text">أرسل طلبك ✦</span>
+            <div class="spinner"></div>
+          </button>
+        </form>
+
+        <!-- Success -->
+        <div class="success-view" id="successView">
+          <div class="success-icon">✦</div>
+          <h3>تم استلام طلبك!</h3>
+          <p>شكراً لك — سيتواصل معك فريقنا خلال ٢٤ ساعة على البريد الإلكتروني أو الجوال الذي أدخلته.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">نبني</div>
+  <p>© ٢٠٢٥ نبني — جميع الحقوق محفوظة</p>
+</footer>
+
+<script>
+/* ─────────────────────────────────────────────
+   CONFIG — replace with your Formspree form ID
+   or your own API endpoint
+──────────────────────────────────────────────*/
+const FORM_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+// To use: go to formspree.io → New form → copy the ID
+// Example: 'https://formspree.io/f/xabc1234'
+
+/* ─────────────────────────────────────────────
+   GSAP + ScrollTrigger setup
+──────────────────────────────────────────────*/
+gsap.registerPlugin(ScrollTrigger);
+
+/* ─────────────────────────────────────────────
+   NAV scroll behaviour
+──────────────────────────────────────────────*/
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+  const max = document.body.scrollHeight - window.innerHeight;
+  document.getElementById('progress').style.width =
+    Math.min(100, (window.scrollY / max) * 100) + '%';
+}, { passive: true });
+
+/* ─────────────────────────────────────────────
+   HERO entrance (on load)
+──────────────────────────────────────────────*/
+const heroTl = gsap.timeline({ delay: 0.2 });
+heroTl
+  .from('#hero-tag', { opacity: 0, y: 20, duration: .7, ease: 'power3.out' })
+  .from('.hero-line span', {
+    y: 90, opacity: 0, duration: 1,
+    stagger: 0.18, ease: 'power4.out'
+  }, '-=.3')
+  .from('#hero-sub', { opacity: 0, y: 24, duration: .8, ease: 'power3.out' }, '-=.5')
+  .from('#hero-btn', { opacity: 0, y: 20, duration: .7, ease: 'power3.out' }, '-=.4')
+  .from('.hero-scroll', { opacity: 0, duration: .8 }, '-=.2');
+
+/* ─────────────────────────────────────────────
+   MARQUEE pause on hover
+──────────────────────────────────────────────*/
+const marqueeTrack = document.querySelector('.marquee-track');
+document.querySelector('.marquee-strip').addEventListener('mouseenter',
+  () => marqueeTrack.style.animationPlayState = 'paused');
+document.querySelector('.marquee-strip').addEventListener('mouseleave',
+  () => marqueeTrack.style.animationPlayState = 'running');
+
+/* ─────────────────────────────────────────────
+   SERVICES — stagger cards
+──────────────────────────────────────────────*/
+gsap.from('.section-header .eyebrow', {
+  opacity: 0, x: 30, duration: .7, ease: 'power3.out',
+  scrollTrigger: { trigger: '#services .section-header', start: 'top 85%' }
+});
+gsap.from('#services .section-h2', {
+  opacity: 0, y: 40, duration: .9, ease: 'power3.out',
+  scrollTrigger: { trigger: '#services .section-h2', start: 'top 88%' }
+});
+gsap.from('#services .section-sub', {
+  opacity: 0, y: 20, duration: .7, delay: .15, ease: 'power3.out',
+  scrollTrigger: { trigger: '#services .section-sub', start: 'top 90%' }
+});
+gsap.from('.scard', {
+  opacity: 0, y: 70, duration: .8,
+  stagger: { amount: .6, from: 'start' },
+  ease: 'power3.out',
+  scrollTrigger: { trigger: '.services-grid', start: 'top 82%' }
+});
+
+/* ─────────────────────────────────────────────
+   PROCESS — steps + divider line draw
+──────────────────────────────────────────────*/
+gsap.from('#process .section-header', {
+  opacity: 0, y: 50, duration: .9, ease: 'power3.out',
+  scrollTrigger: { trigger: '#process .section-header', start: 'top 85%' }
+});
+gsap.from('.process-step', {
+  opacity: 0, y: 60, duration: .8,
+  stagger: .2, ease: 'power3.out',
+  scrollTrigger: { trigger: '.process-wrapper', start: 'top 80%' }
+});
+gsap.to('.process-divider', {
+  scaleY: 1, duration: 1.2, ease: 'power2.out',
+  stagger: .3,
+  scrollTrigger: { trigger: '.process-wrapper', start: 'top 75%' }
+});
+gsap.from('.process-num', {
+  opacity: 0, scale: .5, duration: .9,
+  stagger: .2, ease: 'back.out(1.4)',
+  scrollTrigger: { trigger: '.process-wrapper', start: 'top 80%' }
+});
+
+/* ─────────────────────────────────────────────
+   STATS — count-up numbers
+──────────────────────────────────────────────*/
+gsap.from('.stats-grid', {
+  opacity: 0, y: 50, duration: .9, ease: 'power3.out',
+  scrollTrigger: { trigger: '#stats', start: 'top 82%' }
+});
+
+document.querySelectorAll('.stat-num').forEach(el => {
+  const target = +el.dataset.target;
+  ScrollTrigger.create({
+    trigger: el,
+    start: 'top 88%',
+    once: true,
+    onEnter: () => {
+      gsap.to({ val: 0 }, {
+        val: target,
+        duration: 1.8,
+        ease: 'power2.out',
+        onUpdate: function () {
+          el.textContent = Math.round(this.targets()[0].val)
+            .toLocaleString('ar-EG');
+        }
+      });
+    }
+  });
+});
+
+/* ─────────────────────────────────────────────
+   FORM section — slide in
+──────────────────────────────────────────────*/
+gsap.from('.form-info', {
+  opacity: 0, x: 60, duration: 1, ease: 'power3.out',
+  scrollTrigger: { trigger: '#form-section', start: 'top 80%' }
+});
+gsap.from('#formCard', {
+  opacity: 0, y: 70, duration: 1, delay: .15, ease: 'power3.out',
+  scrollTrigger: { trigger: '#form-section', start: 'top 80%' }
+});
+gsap.from('.form-group', {
+  opacity: 0, y: 25, stagger: .1, duration: .6, ease: 'power2.out',
+  scrollTrigger: { trigger: '#contactForm', start: 'top 88%' }
+});
+
+/* ─────────────────────────────────────────────
+   FORM submit — Formspree backend
+──────────────────────────────────────────────*/
+document.getElementById('contactForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const form   = e.target;
+  const btn    = document.getElementById('submitBtn');
+  const errEl  = document.getElementById('formError');
+
+  /* collect data */
+  const data = {
+    name:         form.name.value.trim(),
+    phone:        form.phone.value.trim(),
+    email:        form.email.value.trim(),
+    project_type: form.project_type.value,
+    budget:       form.budget.value,
+    details:      form.details.value.trim(),
+    _subject:     `طلب مشروع جديد — ${form.name.value.trim()}`,
+  };
+
+  /* basic validation */
+  if (!data.project_type || !data.budget) {
+    errEl.textContent = 'يرجى اختيار نوع المشروع والميزانية.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+  errEl.classList.remove('show');
+
+  try {
+    const res = await fetch(FORM_ENDPOINT, {
+      method:  'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept':       'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (res.ok) {
+      /* show success */
+      form.style.display = 'none';
+      const sv = document.getElementById('successView');
+      sv.style.display = 'block';
+      gsap.from(sv, { opacity: 0, y: 30, duration: .8, ease: 'power3.out' });
+    } else {
+      const json = await res.json().catch(() => ({}));
+      throw new Error(json.error || 'Server error');
+    }
+  } catch (err) {
+    errEl.textContent = 'حدث خطأ في الإرسال. تحقق من اتصالك وحاول مجدداً.';
+    errEl.classList.add('show');
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+});
+
+/* ─────────────────────────────────────────────
+   Generic hover lift on cards (no GSAP needed)
+──────────────────────────────────────────────*/
+/* handled by CSS transitions above */
+
+/* ─────────────────────────────────────────────
+   Refresh ScrollTrigger on font load
+──────────────────────────────────────────────*/
+document.fonts.ready.then(() => ScrollTrigger.refresh());
+</script>
+</body>
+</html>
