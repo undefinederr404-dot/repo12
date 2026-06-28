@@ -38,11 +38,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:600;display:flex;align-items:cen
 
 /* ── HERO ── */
 #hero{position:relative;z-index:50;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 2.4rem;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 .htitle{font-size:clamp(2.6rem,9vw,7rem);font-weight:800;letter-spacing:-.04em;line-height:.95;direction:rtl;text-align:right}
-.htitle span{display:block}
+.htitle span{display:block;opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) forwards}
+.htitle span:nth-child(1){animation-delay:.1s}
+.htitle span:nth-child(2){animation-delay:.28s}
 .htitle .accent{background:linear-gradient(90deg,#9ab3ff,#cf9bff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hdesc{max-width:380px;margin-top:1.6rem;margin-right:0;margin-left:auto;font-size:.85rem;line-height:2;color:#8b8b95;letter-spacing:.02em;text-align:right;direction:rtl}
-.hero-cta-row{margin-top:2.4rem;display:flex;justify-content:flex-end;gap:1rem}
+.hdesc{max-width:380px;margin-top:1.6rem;margin-right:0;margin-left:auto;font-size:.85rem;line-height:2;color:#8b8b95;letter-spacing:.02em;text-align:right;direction:rtl;opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .46s forwards}
+.hero-cta-row{margin-top:2.4rem;display:flex;justify-content:flex-end;gap:1rem;opacity:0;animation:fadeUp .8s cubic-bezier(.16,1,.3,1) .62s forwards}
+@media(prefers-reduced-motion:reduce){.htitle span,.hdesc,.hero-cta-row{animation:none;opacity:1}}
 .hero-cta{font-size:.72rem;letter-spacing:.12em;color:#000;background:#fff;text-decoration:none;padding:.85rem 1.8rem;border-radius:3px;font-weight:800;border:none;cursor:pointer;transition:transform .15s,background .2s}
 .hero-cta:hover{background:#c8d4ff;transform:translateY(-1px)}
 .scroll-cue{position:absolute;bottom:2.2rem;left:50%;transform:translateX(-50%);font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:#3c3c46;direction:rtl}
@@ -52,8 +56,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:600;display:flex;align-items:cen
 #work{position:relative;z-index:50;padding:6rem 2.4rem 7rem;direction:rtl}
 .section-label{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#55555f;margin-bottom:2.2rem}
 .work-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06)}
-.work-card{background:#0a0a10;padding:2.2rem 1.8rem;cursor:default;transition:background .25s;position:relative;overflow:hidden}
+.work-card{background:#0a0a10;padding:2.2rem 1.8rem;cursor:default;transition:background .25s,transform .25s;position:relative;overflow:hidden;opacity:0;transform:translateY(24px)}
+.work-card.in{opacity:1;transform:translateY(0);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
 .work-card:hover{background:#101018}
+@media(prefers-reduced-motion:reduce){.work-card{opacity:1;transform:none}}
 .work-num{font-size:.6rem;color:#46464f;letter-spacing:.2em;margin-bottom:1rem}
 .work-name{font-size:clamp(1.1rem,2.4vw,1.6rem);font-weight:700;letter-spacing:-.01em;margin-bottom:.6rem}
 .work-cat{font-size:.66rem;color:#6c6c78;letter-spacing:.04em}
@@ -66,7 +72,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:600;display:flex;align-items:cen
 
 /* ── END CTA ── */
 #end-cta{position:relative;z-index:50;padding:6rem 2.4rem 7rem;text-align:center;direction:rtl}
-#end-cta h2{font-size:clamp(1.6rem,4.4vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:1.6rem;line-height:1.2}
+#end-cta h2{font-size:clamp(1.6rem,4.4vw,3rem);font-weight:800;letter-spacing:-.02em;margin-bottom:1.6rem;line-height:1.2;opacity:0;transform:translateY(20px)}
+#end-cta h2.in{opacity:1;transform:translateY(0);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+#end-cta-btn{opacity:0;transform:translateY(20px)}
+#end-cta-btn.in{opacity:1;transform:translateY(0);transition:opacity .7s cubic-bezier(.16,1,.3,1) .12s,transform .7s cubic-bezier(.16,1,.3,1) .12s}
+@media(prefers-reduced-motion:reduce){#end-cta h2,#end-cta-btn{opacity:1;transform:none}}
 #end-cta-btn{font-size:.78rem;letter-spacing:.1em;color:#000;background:#fff;border:none;padding:1rem 2.6rem;border-radius:3px;font-weight:800;cursor:pointer;transition:background .2s,transform .15s;font-family:inherit}
 #end-cta-btn:hover{background:#c8d4ff;transform:translateY(-1px)}
 
@@ -155,7 +165,7 @@ footer{position:relative;z-index:50;padding:2rem 2.4rem;display:flex;justify-con
 </section>
 
 <section id="stats">
-  <div class="stat"><b>+30</b><span>مشروع منجز</span></div>
+  <div class="stat"><b data-count="30">0</b><span>مشروع منجز</span></div>
   <div class="stat"><b>٢٤ ساعة</b><span>وقت الرد على الطلبات</span></div>
   <div class="stat"><b>PHP · JS</b><span>أدوات نستخدمها يومياً</span></div>
 </section>
@@ -247,7 +257,27 @@ grid.innerHTML=WORKS.map(w=>`
     <div class="work-cat">${w.cat}</div>
   </div>
 `).join('');
-
+const cardObserver=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('in'),i*70);
+      cardObserver.unobserve(e.target);
+    }
+  });
+},{threshold:.15});
+document.querySelectorAll('.work-card').forEach(c=>cardObserver.observe(c));
+const countEl=document.querySelector('[data-count]');
+if(countEl){
+  const target=+countEl.dataset.count;
+  new IntersectionObserver((entries,obs)=>{
+    if(entries[0].isIntersecting){
+      let n=0;
+      const step=()=>{n+=Math.ceil(target/24);if(n>=target){countEl.textContent='+'+target}else{countEl.textContent='+'+n;requestAnimationFrame(step)}};
+      step();
+      obs.disconnect();
+    }
+  },{threshold:.5}).observe(countEl);
+}
 /* modal */
 function openModal(){document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden';}
 function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
@@ -264,6 +294,13 @@ document.getElementById('contactForm').addEventListener('submit',function(){
   btn.classList.add('loading');
   btn.disabled=true;
 });
+new IntersectionObserver((entries,obs)=>{
+  if(entries[0].isIntersecting){
+    document.querySelector('#end-cta h2').classList.add('in');
+    document.getElementById('end-cta-btn').classList.add('in');
+    obs.disconnect();
+  }
+},{threshold:.4}).observe(document.getElementById('end-cta'));
 </script>
 </body>
 </html>
